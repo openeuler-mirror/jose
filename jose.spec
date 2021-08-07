@@ -1,12 +1,12 @@
 Name:           jose
-Version:        10
-Release:        5
+Version:        11
+Release:        1
 Summary:        José is a command line utility for performing various tasks on JSON  objects
 License:        ASL 2.0
 URL:            https://github.com/latchset/%{name}
-Source0:        https://github.com/latchset/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.bz2
+Source0:        https://github.com/latchset/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
-BuildRequires:  pkgconfig, gcc, openssl-devel, zlib-devel
+BuildRequires:  pkgconfig, gcc, openssl-devel, zlib-devel, meson, ninja-build, asciidoc
 BuildRequires:  jansson-devel >= 2.10
 
 Provides:       lib%{name}
@@ -47,18 +47,16 @@ Man pages and other related documents for %{name}
 %setup -q
 
 %build
-%__sed -i 's|libcrypto >= 1\.0\.2|libcrypto >= 1\.0\.1|' configure
-
-%configure --disable-openmp
-make %{?_smp_mflags}
+%meson
+%meson_build
 
 %install
-rm -rf %{buildroot} || :
-make install DESTDIR=%{buildroot}
-rm -rf %{buildroot}/%{_libdir}/lib%{name}.la || :
+rm -rf %{buildroot}
+%meson_install
+rm -rf %{buildroot}/%{_libdir}/lib%{name}.la
 
 %check
-make %{?_smp_mflags} check
+%meson_test
 
 %post
 /sbin/ldconfig
@@ -83,6 +81,12 @@ make %{?_smp_mflags} check
 
 
 %changelog
+* Mon Aug 9 2021 zoulin<zoulin13@huawei.com> - 11-1
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC: update version to 11
+
 * Sat Sep 21 2019 caomeng<caomeng5@huawei.com> - 10-5
 - Type:other
 - ID:NA
